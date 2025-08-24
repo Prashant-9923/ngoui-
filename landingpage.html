@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Earth Analyst</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0f4c75;
+            --secondary: #3282b8;
+            --accent: #1b262c;
+            --light: #bbe1fa;
+            --dark: #1b262c;
+            --background: #f8f9fa;
+            --text: #333;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        nav a:hover {
+            color: var(--light);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        button{
+            float: right;
+            display: flex;
+            margin-right: 20px;
+            margin-top: -35px;
+            border: none;
+        }
+        button:hover{
+            background-color: #3282b8;
+            /* color: white; */
+            border: none;
+        }
+        button a{
+            color: black;
+            text-decoration: none;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 5px;
+            padding-bottom: 6px;
+            font-weight: 700;
+            border: none;
+        }
+        button a:hover{
+            color: white;
+            border: none;
+        }
+        /* Hero section */
+        .hero {
+            background: linear-gradient(rgba(15, 76, 117, 0.8), rgba(15, 76, 117, 0.8)), url('Gemini_Generated_Image_wjyqmbwjyqmbwjyq.png') center/cover no-repeat;
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            animation: fadeIn 1.5s ease-in;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Sections */
+        section {
+            padding: 4rem 0;
+        }
+        
+        section h2 {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: var(--dark);
+            font-size: 2rem;
+            position: relative;
+        }
+        
+        section h2:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            margin: 0.5rem auto;
+            border-radius: 2px;
+        }
+        
+        /* Challenge section */
+        .challenge {
+            background-color: white;
+        }
+        
+        .challenge-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        /* Objective section */
+        .objective {
+            background-color: var(--background);
+        }
+        
+        .objective-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .objective-list {
+            list-style-type: none;
+        }
+        
+        .objective-list li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .objective-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        /* Features section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            background: var(--secondary);
+            color: white;
+            font-size: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .feature-content {
+            padding: 1.5rem;
+        }
+        
+        .feature-content h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        /* Demo section */
+        .demo {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+        }
+        
+        .demo h2:after {
+            background: var(--light);
+        }
+        
+        .demo-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-btn {
+            padding: 0.7rem 1.5rem;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+        
+        .tab-btn:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 1rem 0;
+        }
+        
+        .data-source {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 1rem;
+            text-align: left;
+        }
+        
+        /* Interactive Map */
+        .map-container {
+            height: 400px;
+            background: #e9ecef;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            max-width: 300px;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .map-btn {
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .map-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--light);
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #bbe1fa;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .footer-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-icons a {
+            font-size: 1.5rem;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--secondary);
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .mobile-menu {
+                display: none;
+            }
+            
+            .mobile-menu.active {
+                display: block;
+            }
+            
+            .map-overlay {
+                max-width: calc(100% - 40px);
+            }
+        }
+        @media (max-width: 450px){
+            #logout{
+                display: none;
+            }
+        }
+        @media (min-width: 450px){
+            .out{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    <h1>Multimodal Earth Analyst</h1>
+                </div>
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav class="mobile-menu" id="mainNav">
+                    <ul>
+                        <li><a href="#challenge">Challenge</a></li>
+                        <li><a href="#objective">Objective</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <button id="logout"><a href="http://127.0.0.1:5500/loginpage.html">Logout</a></button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>AI-Powered Geospatial Intelligence Platform</h2>
+            <p>Autonomously fusing time-series satellite imagery with spatial and semantic data to deliver dynamic, evidence-backed insights for any location on Earth.</p>
+            <a href="#demo" class="btn">Explore Demo</a>
+        </div>
+    </section>
+
+    <!-- Challenge Section -->
+    <section id="challenge" class="challenge">
+        <div class="container">
+            <h2>The Challenge</h2>
+            <div class="challenge-content">
+                <p>Understanding how places change over time—due to urbanization, climate shifts, infrastructure growth, or population movement—requires merging diverse data streams like satellite imagery, vector maps, census data, traffic patterns, and property listings.</p>
+                <p>Today, this process is fragmented, expert-driven, and largely inaccessible to those who need it most: city planners, journalists, NGOs, and local governments.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Objective Section -->
+    <section id="objective" class="objective">
+        <div class="container">
+            <h2>Our Objective</h2>
+            <div class="objective-content">
+                <p><strong>Build an AI-powered geospatial intelligence platform</strong> that autonomously fuses time-series satellite imagery with spatial and semantic data to deliver dynamic, evidence-backed insights for any location on Earth.</p>
+                <p>The system integrates:</p>
+                <ul class="objective-list">
+                    <li>Satellite imagery with AI-driven change detection</li>
+                    <li>OpenStreetMap and vector geodata</li>
+                    <li>Census, socioeconomic, and real estate datasets</li>
+                    <li>Infrastructure, traffic, environmental, and planning data</li>
+                </ul>
+                <p>It generates <strong>interactive dashboards</strong>, <strong>narrative summaries</strong>, and <strong>interpretable visuals</strong>—all through modular, AI-driven workflows beyond static maps or charts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Multimodal Data Fusion</h3>
+                        <p>Align and analyse raster, vector, tabular, and text data across time and space for comprehensive insights.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Evidence-Based Storytelling</h3>
+                        <p>Generate concise summaries grounded in visual and statistical proof to communicate findings effectively.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Modular Tool Chaining</h3>
+                        <p>Let the system select and combine geospatial tools based on intent for customized analysis workflows.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Interpretable Visualizations</h3>
+                        <p>Build dashboards, maps, and charts that let users explore and validate insights through intuitive interfaces.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Transparent Source Control</h3>
+                        <p>Allow users to define trusted data sources and audit every step of the analysis for complete transparency.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>User-Centric Trust Controls</h3>
+                        <p>Enable users to specify trusted sources and maintain full control over data provenance and analysis methods.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <h2>Interactive Demo</h2>
+            <div class="demo-content">
+                <p>Explore our interactive dashboard that demonstrates the capabilities of the Multimodal Earth Analyst platform.</p>
+                
+                <div class="dashboard-container">
+                    <div class="dashboard-tabs">
+                        <button class="tab-btn active" data-tab="urban">Urban Growth</button>
+                        <button class="tab-btn" data-tab="environment">Environment</button>
+                        <button class="tab-btn" data-tab="population">Population</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="urban-tab">
+                        <h3>Urban Development Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="urbanChart"></canvas>
+                        </div>
+                        <p class="summary">Analysis shows a 34% increase in urbanized land between 2010-2022, with most expansion occurring in suburban regions.</p>
+                        <p class="data-source">Data sources: Landsat Imagery, Municipal Planning Records, OSM</p>
+                    </div>
+                    
+                    <div class="tab-content" id="environment-tab">
+                        <h3>Environmental Changes</h3>
+                        <div class="chart-container">
+                            <canvas id="environmentChart"></canvas>
+                        </div>
+                        <p class="summary">Vegetation health index shows improvement in protected areas but decline in regions with new construction.</p>
+                        <p class="data-source">Data sources: MODIS Satellite, Local Environmental Agency</p>
+                    </div>
+                    
+                    <div class="tab-content" id="population-tab">
+                        <h3>Population Dynamics</h3>
+                        <div class="chart-container">
+                            <canvas id="populationChart"></canvas>
+                        </div>
+                        <p class="summary">Population density has increased by 22% in urban centers while decreasing in rural areas over the past decade.</p>
+                        <p class="data-source">Data sources: National Census Bureau, Mobile Data Patterns</p>
+                    </div>
+                </div>
+                
+               <div class="map-container">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28557.55631829245!2d84.127474!3d26.241581!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3992c7f6850c064d%3A0x5f5c2c279c345c0d!2sHanumanganj%2C%20Ballia%2C%20Uttar%20Pradesh%20277001!5e0!3m2!1sen!2sin!4v1719337739948!5m2!1sen!2sin" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+    
+    <!-- <div class="map-overlay">
+        <h4>Greater Metro Area</h4>
+        <p>Select a region to view detailed analysis of changes over time.</p>
+        <div class="map-legend">
+            <div><span style="background:#ff6b6b; width:15px; height:15px; display:inline-block;"></span> Urban</div>
+            <div><span style="background:#51cf66; width:15px; height:15px; display:inline-block;"></span> Vegetation</div>
+            <div><span style="background:#339af0; width:15px; height:15px; display:inline-block;"></span> Water</div>
+        </div>
+    </div> -->
+
+
+    <!-- <div class="map-controls">
+        <button class="map-btn" id="zoomIn"><i class="fas fa-plus"></i></button>
+        <button class="map-btn" id="zoomOut"><i class="fas fa-minus"></i></button>
+        <button class="map-btn" id="resetView"><i class="fas fa-sync"></i></button>
+    </div> -->
+</div>
+                
+                <a href="#" class="btn">Request Full Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Multimodal Earth Analyst</h3>
+                    <p>An AI-powered geospatial intelligence platform for evidence-backed insights into Earth's changing landscape.</p>
+                    <div class="social-icons">
+                        <a href="https://x.com/Infosys?s=09" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/company/infosys/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://github.com/infosys" target="_blank"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#challenge">Challenge</a>
+                    <a href="#objective">Objective</a>
+                    <a href="#features">Features</a>
+                    <a href="#demo">Demo</a>
+                </div>chal bhag
+                
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-envelope"></i> abc123@gmail.com</p>
+                    <p><i class="fas fa-phone"></i> +91 9876543211</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 277001 . Hanumanganj,Ballia (UP)</p>
+                </div>
+            </div>
+            
+            <button class="out"><a href="http://127.0.0.1:5500/loginpage.html">Logout</a></button>
+
+            <div class="copyright">
+                <p>2025 Infosys Limited. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle functionality
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu after clicking a link
+                    document.getElementById('mainNav').classList.remove('active');
+                }
+            });
+        });
+        
+        // Tab functionality for dashboard
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Initialize charts
+        window.onload = function() {
+            // Urban growth chart
+            const urbanCtx = document.getElementById('urbanChart').getContext('2d');
+            const urbanChart = new Chart(urbanCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2010', '2012', '2014', '2016', '2018', '2020', '2022','2024','2025'],
+                    datasets: [{
+                        label: 'Urbanized Area (sq km)',
+                        data: [120, 135, 158, 172, 185, 195, 210,215,220],
+                        borderColor: '#0f4c75',
+                        backgroundColor: 'rgba(15, 76, 117, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Urban Expansion Over Time'
+                        }
+                    }
+                }
+            });
+            
+            // Environment chart
+            const envCtx = document.getElementById('environmentChart').getContext('2d');
+            const envChart = new Chart(envCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Protected', 'Agricultural', 'Suburban', 'Urban Core', 'Industrial'],
+                    datasets: [{
+                        label: 'Vegetation Health Index',
+                        data: [85, 72, 65, 45, 30],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(40, 167, 69, 0.6)',
+                            'rgba(40, 167, 69, 0.5)',
+                            'rgba(40, 167, 69, 0.4)',
+                            'rgba(40, 167, 69, 0.3)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Vegetation Health by Region'
+                        }
+                    }
+                }
+            });
+            
+            // Population chart
+            const popCtx = document.getElementById('populationChart').getContext('2d');
+            const popChart = new Chart(popCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Urban Core', 'Suburbs', 'Rural'],
+                    datasets: [{
+                        data: [45, 35, 20],
+                        backgroundColor: [
+                            'rgba(15, 76, 117, 0.8)',
+                            'rgba(50, 130, 184, 0.8)',
+                            'rgba(187, 225, 250, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Population Distribution (2022)'
+                        }
+                    }
+                }
+            });
+            
+            // Map button functionality
+            document.getElementById('zoomIn').addEventListener('click', function() {
+                alert('Zooming in on map...');
+            });
+            
+            document.getElementById('zoomOut').addEventListener('click', function() {
+                alert('Zooming out of map...');
+            });
+            
+            document.getElementById('resetView').addEventListener('click', function() {
+                alert('Resetting map view...');
+            });
+        };
+    </script>
+</body>
+</html>
